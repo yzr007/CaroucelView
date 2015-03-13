@@ -13,16 +13,16 @@ import android.widget.ImageView.ScaleType;
 *
  */
 public class CaroucelOptions{
-	List<String> uris;//显示图片uri（支持uil组件支持的所有uri）
-	public int num;//轮播图片数量
-	public int onLoadingImgId;//轮播显示正在加载图片资源ID
-	public int onFailImgId;//轮播显示加载失败图片资源ID
-	public int subscriptview_id;//下标正常状态图标资源ID
-	public int subscriptview_selected_id;//下标选中状态图标资源ID
-	public int subscriptview_size=20;//小标size 默认20
-	public int subscriptview_margin=10;//下标margin 默认10
-	public long period=2000;//轮播延时 默认2000ms
-	public ScaleType scaletype=ScaleType.CENTER_CROP;//轮播显示View的Scaletype参数 默认CENTER_CROP
+	protected List<String> uris;//显示图片uri（支持uil组件支持的所有uri）
+	protected int num;//轮播图片数量
+	protected int onLoadingImgId;//轮播显示正在加载图片资源ID
+	protected int onFailImgId;//轮播显示加载失败图片资源ID
+	protected int subscriptview_id;//下标正常状态图标资源ID
+	protected int subscriptview_selected_id;//下标选中状态图标资源ID
+	protected int subscriptview_size=20;//小标size 默认20
+	protected int subscriptview_margin=10;//下标margin 默认10
+	protected long period=2000;//轮播延时 默认2000ms
+	protected ScaleType scaletype=ScaleType.CENTER_CROP;//轮播显示View的Scaletype参数 默认CENTER_CROP
 	public CaroucelOptions(int num, List<String> uris2,
 			int onLoadingImgId, int onFailImgId, int subscriptview_id,
 			int subscriptview_selected_id) {
