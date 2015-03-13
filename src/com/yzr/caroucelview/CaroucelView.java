@@ -5,10 +5,16 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import android.content.Context;
 import android.graphics.Bitmap.Config;
@@ -23,8 +29,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class CaroucelView extends FrameLayout {
 	/**
@@ -45,22 +51,22 @@ public class CaroucelView extends FrameLayout {
 	 * 轮播UI更新管理器
 	 */
 	private Handler caroucelHandler = new Handler() {
-		@Override
+
 		public void handleMessage(Message msg) {
 			caroucel();
 			super.handleMessage(msg);
 		}
 		private void caroucel() {
-			showgroup.setCurrentItem(nextpage%caroucelOptions.num);
-			nextpage++;
+			showgroup.setCurrentItem((showgroup.getCurrentItem()+1)%caroucelOptions.num);
 		}
 	};
 
 	ImageLoader imageloader = ImageLoader.getInstance();
 	DisplayImageOptions options;
 	CaroucelOptions caroucelOptions;
-	int nextpage=0;
-
+/**
+ * 定时器任务 自动切换
+ */
 	TimerTask task=new TimerTask() {
 		
 		@Override
@@ -79,16 +85,17 @@ public class CaroucelView extends FrameLayout {
 	 * 
 	* @Title: setOptions 
 	* @Description: 设置轮播控件参数，初始化
-	* @param @param caroucelOptions    设定文件 
+	* @param @param caroucelOptions    参数集合 
 	* @return void    返回类型 
 	* @throws
 	 */
 	public void setOptions(CaroucelOptions caroucelOptions ) {
 		this.caroucelOptions=caroucelOptions;
+		initImageLoader();
 		initDisplayImageOptions();
 		init();
 		showtimer=new Timer(true);
-		showtimer.schedule(task,1000,caroucelOptions.period); //延时1000ms后执行，1000ms执行一次
+		showtimer.schedule(task,1000,caroucelOptions.period); //延时1000ms后执行，periodms执行一次
 
 	}
 
@@ -193,6 +200,7 @@ public class CaroucelView extends FrameLayout {
 		LayoutParams showviewP = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.MATCH_PARENT);
 		showview.setLayoutParams(showviewP);
+		showview.setScaleType(ScaleType.CENTER_CROP);
 		return showview;
 	}
 	/**
@@ -296,5 +304,22 @@ public class CaroucelView extends FrameLayout {
 		public void startUpdate(View arg0) {
 		}
 	}
-	
+	public void initImageLoader(){
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration  
+			    .Builder(getContext())  
+			    .memoryCacheExtraOptions(480, 800) // max width, max height，即保存的每个缓存文件的最大长宽  
+			    .threadPoolSize(3)//线程池内加载的数量  
+			    .threadPriority(Thread.NORM_PRIORITY - 2)  
+			    .denyCacheImageMultipleSizesInMemory()  
+			    .memoryCache(new LruMemoryCache(2 * 1024 * 1024)) // You can pass your own memory cache implementation/你可以通过自己的内存缓存实现  
+			    .memoryCacheSize(2 * 1024 * 1024)    
+			    .diskCacheSize(50 * 1024 * 1024)    
+			    .diskCacheFileNameGenerator(new Md5FileNameGenerator())//将保存的时候的URI名称用MD5 加密  
+			    .diskCacheFileCount(100) //缓存的文件数量  
+			    .diskCache(new UnlimitedDiscCache(StorageUtils.getOwnCacheDirectory(getContext(), "MyAppName/Cache")))//自定义缓存路径  
+			    .defaultDisplayImageOptions(DisplayImageOptions.createSimple())  
+			    .imageDownloader(new BaseImageDownloader(getContext(), 5 * 1000, 30 * 1000)) // connectTimeout (5 s), readTimeout (30 s)超时时间  
+			    .build();//开始构建  
+		ImageLoader.getInstance().init(config);
+	}
 }
