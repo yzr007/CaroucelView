@@ -8,15 +8,20 @@
 
 ##依赖
 [Android-Universal-Image-Loader](https://github.com/nostra13/Android-Universal-Image-Loader)
+
 android-support-v4.jar
 
 ##权限
+``` xml
 <uses-permission android:name="android.permission.INTERNET" />  
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />  
 
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />  
+```
 ##示例
 ``` java
     CaroucelView caroucelView=(CaroucelView) findViewById(R.id.caroucelView);
+    
     CaroucelOptions carouceloptions=new CaroucelOptions(uris.size(), uris, R.drawable.default_img, R.drawable.default_img, R.drawable.index_normal, R.drawable.index_selected);
+    
     caroucelView.setOptions(carouceloptions);
 ```
